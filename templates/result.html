@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - Learn & Earn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="result-card">
+            <h1>Quiz Results</h1>
+            
+            <div class="score-display">
+                <div class="score-circle">
+                    <span class="score">{{ score }}%</span>
+                </div>
+                <div class="result-status {% if score >= 60 %}passed{% else %}failed{% endif %}">
+                    {% if score >= 60 %}Passed!{% else %}Not Passed{% endif %}
+                </div>
+            </div>
 
+            {% if score >= 60 %}
+            <div class="reward-display">
+                <h2>Congratulations! 🎉</h2>
+                <p>You earned {{ tokens }} LNE tokens</p>
+                <div class="token-animation">💰</div>
+            </div>
+            {% else %}
+            <div class="retry-message">
+                <h2>Keep Learning! 📚</h2>
+                <p>Don't worry, you can try again to earn tokens</p>
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="/quiz" class="vote-button">Try Another Quiz</a>
+                <a href="/wallet" class="vote-button">View Wallet</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='webapp.js') }}"></script>
+    <script>
+        // Add confetti animation if passed
+        {% if score >= 60 %}
+        function showConfetti() {
+            // Simple confetti animation
+            const colors = ['#6c5ce7', '#a8a4e6', '#ffffff'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.opacity = Math.random();
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        showConfetti();
+        {% endif %}
+    </script>
+</body>
+</html> 
