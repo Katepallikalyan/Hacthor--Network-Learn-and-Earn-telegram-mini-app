@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Governance - Learn & Earn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Governance</h1>
+            <p class="subtitle">Vote for the next quiz topics</p>
+        </header>
 
+        <div class="polls-container">
+            {% for poll in polls %}
+            <div class="poll-card">
+                <h2>{{ poll.title }}</h2>
+                <p>{{ poll.description }}</p>
+                <div class="poll-stats">
+                    <div class="vote-count">
+                        <span class="count">{{ poll.votes }}</span>
+                        <span class="label">votes</span>
+                    </div>
+                    <div class="vote-progress">
+                        <div class="progress-bar" style="width: {{ (poll.votes / total_votes * 100) if total_votes > 0 else 0 }}%"></div>
+                    </div>
+                </div>
+                <button class="vote-button" onclick="vote({{ poll.id }})" {% if poll.has_voted %}disabled{% endif %}>
+                    {% if poll.has_voted %}Voted{% else %}Vote{% endif %}
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="governance-info">
+            <h2>How it works</h2>
+            <ul>
+                <li>Vote for your preferred quiz topic</li>
+                <li>Each wallet can vote once per poll</li>
+                <li>Complete the quiz on your voted topic to earn bonus tokens</li>
+                <li>Voting is recorded on the blockchain</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='webapp.js') }}"></script>
+    <script>
+        function vote(pollId) {
+            fetch('/api/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    poll_id: pollId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
