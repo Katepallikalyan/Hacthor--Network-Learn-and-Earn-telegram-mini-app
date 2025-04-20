@@ -3,136 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz - Learn & Earn</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Hathor Network Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, #fff);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .nav-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Available Quizzes</h1>
-            <p class="subtitle">Choose a quiz to start learning and earning</p>
-        </header>
-
-        {% if quiz %}
-        <div class="quiz-container">
-            <div class="question">
-                <h2>{{ quiz.title }}</h2>
-                <p>{{ quiz.description }}</p>
-                <div class="quiz-info">
-                    <p>Token Reward: {{ quiz.token_reward }} LNE</p>
-                    <p>Pass Mark: {{ quiz.pass_mark }}%</p>
-                </div>
-                <div id="quiz-content">
-                    <!-- Questions will be loaded here dynamically -->
-                </div>
-                <div class="quiz-controls">
-                    <button id="prev-btn" class="vote-button" style="display: none;">Previous</button>
-                    <button id="next-btn" class="vote-button">Next</button>
-                    <button id="submit-btn" class="vote-button" style="display: none;">Submit</button>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="card-grid">
-            {% for quiz in quizzes %}
-            <div class="card" onclick="window.location.href='/quiz/{{ quiz.id }}'">
-                <div class="card-icon">📚</div>
-                <h2>{{ quiz.title }}</h2>
-                <p>{{ quiz.description }}</p>
-                <div class="quiz-info">
-                    <p>Reward: {{ quiz.token_reward }} LNE</p>
-                    <p>Pass Mark: {{ quiz.pass_mark }}%</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        <h1>Hathor Network</h1>
+        <button class="nav-button" onclick="window.location.href='/wallet'">Wallet</button>
+        <button class="nav-button" onclick="window.location.href='/governance'">Governance</button>
+        <button class="nav-button" onclick="window.location.href='/quiz'">Quiz</button>
     </div>
 
-    <script src="{{ url_for('static', filename='webapp.js') }}"></script>
     <script>
-        {% if quiz %}
-        // Initialize quiz data
-        const quizData = {{ quiz|tojson|safe }};
-        let currentQuestion = 0;
-        let answers = new Array(quizData.questions.length).fill(null);
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-        function loadQuestion(index) {
-            const question = quizData.questions[index];
-            const quizContent = document.getElementById('quiz-content');
-            
-            quizContent.innerHTML = `
-                <div class="question-progress">
-                    <p>Question ${index + 1} of ${quizData.questions.length}</p>
-                </div>
-                <h3>${question.question}</h3>
-                <div class="options">
-                    ${question.options.map((option, i) => `
-                        <div class="option" onclick="selectAnswer(${i})">
-                            ${option}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            // Update button visibility
-            document.getElementById('prev-btn').style.display = index > 0 ? 'inline' : 'none';
-            document.getElementById('next-btn').style.display = index < quizData.questions.length - 1 ? 'inline' : 'none';
-            document.getElementById('submit-btn').style.display = index === quizData.questions.length - 1 ? 'inline' : 'none';
-        }
-
-        function selectAnswer(answerIndex) {
-            answers[currentQuestion] = answerIndex;
-            // Highlight selected answer
-            const options = document.querySelectorAll('.option');
-            options.forEach((option, i) => {
-                option.classList.toggle('selected', i === answerIndex);
-            });
-        }
-
-        document.getElementById('prev-btn').onclick = () => {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                loadQuestion(currentQuestion);
-            }
-        };
-
-        document.getElementById('next-btn').onclick = () => {
-            if (currentQuestion < quizData.questions.length - 1) {
-                currentQuestion++;
-                loadQuestion(currentQuestion);
-            }
-        };
-
-        document.getElementById('submit-btn').onclick = () => {
-            // Calculate score
-            const score = answers.reduce((acc, answer, i) => {
-                return acc + (answer === quizData.questions[i].correct_answer ? 1 : 0);
-            }, 0) / quizData.questions.length * 100;
-
-            // Send score to server
-            fetch('/submit-quiz', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    quiz_id: quizData.id,
-                    score: score,
-                    answers: answers
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = `/result?score=${score}&tokens=${data.tokens}`;
-                }
-            });
-        };
-
-        // Load first question
-        loadQuestion(0);
-        {% endif %}
+        // Set the header color
+        tg.setHeaderColor('#2481cc');
     </script>
 </body>
 </html> 
