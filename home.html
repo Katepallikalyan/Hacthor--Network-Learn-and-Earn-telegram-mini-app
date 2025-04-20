@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn & Earn - Web3 Learning Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to Learn & Earn!</h1>
+            <p class="subtitle">Learn about Web3 and earn tokens while you learn</p>
+        </header>
+
+        <div class="card-grid">
+            <div class="card" onclick="window.location.href='/quiz'">
+                <div class="card-icon">📚</div>
+                <h2>Start Quiz</h2>
+                <p>Test your knowledge and earn tokens</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='/wallet'">
+                <div class="card-icon">💰</div>
+                <h2>Wallet</h2>
+                <p>Check your token balance</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='/governance'">
+                <div class="card-icon">🗳️</div>
+                <h2>Governance</h2>
+                <p>Vote on upcoming topics</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='webapp.js') }}"></script>
+</body>
+</html> 
